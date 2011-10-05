@@ -6,6 +6,8 @@ import random
 import pyglet
 from pyglet.window import key, mouse
 
+import model
+
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
@@ -18,7 +20,7 @@ class GameWindow(pyglet.window.Window):
         super(GameWindow, self).__init__(**kwargs)
         self.dragging = False
         self.camera_offset = [0, 0]
-        self.zoom = 0
+        self.zoom = 10
         self.star_coords = []
         self.randomize_stars()
         self.update_stars()
@@ -66,7 +68,27 @@ class GameWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
+
         self.stars.draw(pyglet.gl.GL_POINTS)
+        ### draw planets
+        z = self.zoom
+        min_x = -self.camera_offset[0]/z
+        min_y = -self.camera_offset[1]/z
+        max_x = min_x + (self.width/z)
+        max_y = min_y + (self.height/z)
+        planets = model.get_planets(min_x, min_y, max_x, max_y)
+        pl = []
+        for planet in planets:
+            p_x = planet.x*z + self.camera_offset[0]
+            p_y = planet.y*z + self.camera_offset[1]
+            pl.extend([p_x,   p_y,
+                       p_x,   p_y+z,
+                       p_x+z, p_y+z,
+                       p_x+z, p_y])
+        if pl:
+            planets_v = pyglet.graphics.vertex_list(len(planets)*4,
+                                                    ('v2i', tuple(pl)))
+            planets_v.draw(pyglet.gl.GL_QUADS)
 
 
 if __name__ == '__main__':
