@@ -13,7 +13,7 @@ WINDOW_HEIGHT = 600
 
 KEYBOARD_SCROLL = 50 #px
 
-NUMBER_OF_STARS = 1000
+MAX_NUMBER_OF_STARS = 1000
 
 class GameWindow(pyglet.window.Window):
     def __init__(self, **kwargs):
@@ -22,8 +22,14 @@ class GameWindow(pyglet.window.Window):
         self.camera_offset = [0, 0]
         self.zoom = 10
         self.star_coords = []
+        self.star_count = 1
         self.randomize_stars()
         self.update_stars()
+
+    def on_key_press(self, symbol, modifiers):
+        super(GameWindow, self).on_key_press(symbol, modifiers)
+        if symbol == key.F:
+            self.set_fullscreen(not self.fullscreen)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if buttons & mouse.LEFT:
@@ -52,19 +58,18 @@ class GameWindow(pyglet.window.Window):
 
     def randomize_stars(self):
         self.star_coords = []
-        for i in xrange(self.width*self.height/1000):
+        for i in xrange(self.star_count):
             self.star_coords.append(random.randint(0, self.width))
             self.star_coords.append(random.randint(0, self.height))
         self.stars = pyglet.graphics.vertex_list(len(self.star_coords) / 2,
                                                  ('v2i', tuple(self.star_coords)))
-
     def on_resize(self, width, height):
+        self.star_count = self.width*self.height/1000
+        self.star_count = MAX_NUMBER_OF_STARS if self.star_count > MAX_NUMBER_OF_STARS else self.star_count
         self.randomize_stars()
         self.update_stars()
         super(GameWindow, self).on_resize(width, height)
 
-    def on_key_press(self, symbol, modifiers):
-        super(GameWindow, self).on_key_press(symbol, modifiers)
 
     def on_draw(self):
         self.clear()
