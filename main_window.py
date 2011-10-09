@@ -13,7 +13,7 @@ WINDOW_HEIGHT = 600
 
 KEYBOARD_SCROLL = 50 #px
 
-MAX_NUMBER_OF_STARS = 1000
+MAX_NUMBER_OF_STARS = 500
 
 class GameWindow(pyglet.window.Window):
     def __init__(self, **kwargs):
