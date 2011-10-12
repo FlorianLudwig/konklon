@@ -4,6 +4,9 @@
 import random
 
 import pyglet
+# Disable error checking for increased performance
+pyglet.options['debug_gl'] = False
+from pyglet import gl
 from pyglet.window import key, mouse
 
 import model
